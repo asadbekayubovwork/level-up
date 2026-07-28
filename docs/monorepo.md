@@ -2,6 +2,34 @@
 
 Bu repo — pnpm workspaces + Turborepo. Quyida qaror va konvensiyalar: **nima uchun shunday**, va yangi odam nimani qanday qilishi kerak.
 
+---
+
+## ⚠️ Birinchi setup: GitHub Packages tokeni
+
+`@webaseltd/ui` **npmjs.org'da emas** — GitHub Packages'da. Tokensiz `pnpm install` yiqiladi:
+
+```
+ERR_PNPM_FETCH_401  GET https://npm.pkg.github.com/@webaseltd%2fui: Unauthorized
+```
+
+**Yechim** — `read:packages` ruxsatli PAT (github.com/settings/tokens → classic):
+
+```bash
+export NODE_AUTH_TOKEN=<PAT>     # .bashrc/.zshrc ga qo'shing
+pnpm install
+```
+
+Repo'dagi [`.npmrc`](../.npmrc) faqat manzilni ko'rsatadi va token'ni muhitdan oladi:
+
+```
+@webaseltd:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+Token faylga **hech qachon yozilmaydi**. CI'da ham xuddi shu o'zgaruvchi ishlatiladi (GitHub Actions'da `secrets.GITHUB_TOKEN` avtomatik beriladi).
+
+---
+
 ## Tuzilish
 
 ```
@@ -55,6 +83,26 @@ Agar paket build artefakt chiqarmasa (typecheck-only), yoniga `turbo.json` qo'yi
 
 ## Asosiy qarorlar
 
+### 0. UI: `@webaseltd/ui` asos, `packages/ui` — ustki qatlam
+
+`@webaseltd/ui` — kompaniyaning Vue 3 komponent kutubxonasi (naive-ui forki). Ikkita prefiks eksport qiladi: `W*` (Webase konvensiyasi — `WButton`, `WCard`, `WDataTable`) va `N*` (naive-ui bilan bir xil). **`W*` ishlating.**
+
+`packages/ui` uni o'rab beradi:
+
+```ts
+export * from '@webaseltd/ui'                      // yagona import nuqtasi
+export { default as LuThemeProvider } from './LuThemeProvider.vue'
+export { themeOverrides, tokens } from './theme'
+```
+
+App'lar `@webaseltd/ui` ni **to'g'ridan-to'g'ri import qilmaydi** — faqat `@level-up/ui` orqali. Sabab: kutubxonani almashtirish, komponentni o'rash yoki theme'ni majburlash kerak bo'lganda o'zgarish bitta joyda bo'ladi.
+
+`LuButton`/`LuCard` **o'chirildi** — `WButton`/`WCard` bor ekan, ustiga hech narsa qo'shmaydigan wrapper faqat qo'shimcha yuk edi.
+
+Theme bitta joydan: har app root'ida `<LuThemeProvider>` turadi, u `WConfigProvider` ga `themeOverrides` ni beradi.
+
+> **Narxi:** komponent kutubxonasi bundle'ni oshiradi — asosiy chunk 63 kB → 188 kB. Tree-shaking ishlaydi (666 eksportdan faqat ishlatilgani kiradi) va route-level splitting bilan `WCard` alohida 12 kB chunk'ga chiqadi. To'liq `dist` — 256 kB.
+
 ### 1. Shared paketlar build QILINMAYDI (JIT package)
 
 `@level-up/ui` ning `main` i `./src/index.ts` — kompilyatsiya qilingan `dist/` emas.
@@ -102,6 +150,7 @@ Cache'ni tozalash: `rm -rf .turbo apps/*/dist`.
 
 | Muammo | Yechim |
 |---|---|
+| `ERR_PNPM_FETCH_401` / `Unauthorized` | `NODE_AUTH_TOKEN` o'rnatilmagan → yuqoridagi setup bo'limiga qarang |
 | `Ignored build scripts: esbuild` | pnpm 10 postinstall'ni default bloklaydi → `pnpm-workspace.yaml` dagi `onlyBuiltDependencies` ga qo'shing |
 | `no output files found for task X#build` | typecheck-only paket → `packages/X/turbo.json` da `outputs: []` |
 | App boshqa app'ni import qilyapti | shared kodni `packages/*` ga chiqaring |

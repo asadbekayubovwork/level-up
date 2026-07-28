@@ -16,7 +16,7 @@ pnpm workspaces + Turborepo asosida monorepo qurdim: 2 ta app (`web`, `admin`) v
 | [scripts/new-app.mjs](../../../scripts/new-app.mjs) | app generator — 0 dependency, faqat node stdlib |
 | [scripts/new-app.test.mjs](../../../scripts/new-app.test.mjs) | `node:test` — oxirgi test yaratilgan app'ni haqiqatan build qiladi |
 | [docs/monorepo.md](../../../docs/monorepo.md) | workspace pattern'lari, qarorlar, tuzoqlar |
-| [packages/ui/](../../../packages/ui/) | shared component paketi (`LuButton`, `LuCard`) |
+| [packages/ui/](../../../packages/ui/) | UI qatlami — `@webaseltd/ui` re-export + theme/token'lar |
 | [apps/web/](../../../apps/web/) | 1-app, port 5173 |
 | [apps/admin/](../../../apps/admin/) | 2-app, port 5174 |
 
@@ -54,10 +54,11 @@ pnpm ls --filter @level-up/web --depth 0
 ```
 
 **2. Cross-package type safety ishlaydi:**
-`apps/web/src/App.vue` da `variant="ghost"` → `variant="pink"` qiling:
+`apps/web/src/router.ts` da `permissions: ['role.manage']` → `['role.manag']` qiling:
 
 ```
-src/App.vue(14,17): error TS2322: Type '"pink"' is not assignable to type 'ButtonVariant | undefined'.
+src/router.ts(20,49): error TS2820: Type '"role.manag"' is not assignable to type 'Permission'.
+  Did you mean '"role.manage"'?
 ```
 
 **3. Turbo cache ishlaydi:**

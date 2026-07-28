@@ -41,15 +41,14 @@ export function createApp(name, root = process.cwd()) {
   }
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n')
 
+  // ponytail: faqat <title> — App.vue markup'iga tegmaymiz, aks holda template
+  // har o'zgarganda generator sinadi. Qolgan nomlarni foydalanuvchi o'zi yozadi.
   const title = name[0].toUpperCase() + name.slice(1)
-  for (const [file, re] of [
-    ['index.html', /<title>.*<\/title>/],
-    ['src/App.vue', /<h1>.*<\/h1>/],
-  ]) {
-    const p = join(dest, file)
-    const tag = file === 'index.html' ? 'title' : 'h1'
-    writeFileSync(p, readFileSync(p, 'utf8').replace(re, `<${tag}>Level Up — ${title}</${tag}>`))
-  }
+  const html = join(dest, 'index.html')
+  writeFileSync(
+    html,
+    readFileSync(html, 'utf8').replace(/<title>.*<\/title>/, `<title>Level Up — ${title}</title>`),
+  )
 
   return { name: pkg.name, dir: `${APPS}/${name}`, port }
 }

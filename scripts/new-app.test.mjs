@@ -30,7 +30,6 @@ test('yangi app to\'g\'ri nom, port va sarlavha bilan yaratiladi', (t) => {
   assert.equal(pkg.dependencies['@level-up/ui'], 'workspace:*')
 
   assert.match(readFileSync(join(ROOT, app.dir, 'index.html'), 'utf8'), /<title>Level Up — Tmp-smoke<\/title>/)
-  assert.match(readFileSync(join(ROOT, app.dir, 'src/App.vue'), 'utf8'), /<h1>Level Up — Tmp-smoke<\/h1>/)
 
   // template'dan dist/ va node_modules ko'chirilmagan
   assert.throws(() => readFileSync(join(ROOT, app.dir, 'dist/index.html')))

@@ -1,11 +1,17 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  // Turbo default'da muhitni filtrlaydi — bularsiz bola jarayonlarda
+  // ".npmrc: Failed to replace env in config: ${NODE_AUTH_TOKEN}" chiqadi.
+  "globalPassThroughEnv": ["NODE_AUTH_TOKEN", "GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
     "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
       "dependsOn": ["^build"]
     },
     "dev": {
