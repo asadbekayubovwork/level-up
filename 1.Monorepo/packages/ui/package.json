@@ -3,7 +3,18 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "index.js",
-  "exports": { ".": "./index.js" },
-  "peerDependencies": { "vue": "^3.5.13" }
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "peerDependencies": { "vue": "^3.5.13" },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vue-tsc": "^2.2.0"
+  }
 }
