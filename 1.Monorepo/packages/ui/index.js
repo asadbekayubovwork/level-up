@@ -1,1 +1,1 @@
-export const button = (label) => `[ ${label} ]`
+export { default as Button } from './Button.vue'
